@@ -6,10 +6,8 @@ Ready to use, lean and highly configurable Elasticsearch container image.
 
 ## Current software
 
-* OpenJDK JRE 8u151
+* OpenJDK JRE 9
 * Elasticsearch 6.3.0
-
-**Note:** `x-pack-ml` module is forcibly disabled as it's not supported on Alpine Linux.
 
 ## Run
 
@@ -19,6 +17,7 @@ Ready to use, lean and highly configurable Elasticsearch container image.
 * [Multicast discovery is no longer built-in](https://www.elastic.co/guide/en/elasticsearch/reference/2.3/breaking_20_removed_features.html#_multicast_discovery_is_now_a_plugin)
 
 Ready to use node for cluster `elasticsearch-default`:
+
 ```
 docker run --name elasticsearch \
 	--detach \
@@ -28,6 +27,7 @@ docker run --name elasticsearch \
 ```
 
 Ready to use node for cluster `myclustername`:
+
 ```
 docker run --name elasticsearch \
 	--detach \
@@ -38,6 +38,7 @@ docker run --name elasticsearch \
 ```
 
 Ready to use node for cluster `elasticsearch-default`, with 8GB heap allocated to Elasticsearch:
+
 ```
 docker run --name elasticsearch \
 	--detach \
@@ -48,6 +49,7 @@ docker run --name elasticsearch \
 ```
 
 Ready to use node with plugins (x-pack and repository-gcs) pre installed. Already installed plugins are ignored:
+
 ```
 docker run --name elasticsearch \
 	--detach \
@@ -59,6 +61,7 @@ docker run --name elasticsearch \
 ```
 
 **Master-only** node for cluster `elasticsearch-default`:
+
 ```
 docker run --name elasticsearch \
 	--detach \
@@ -70,6 +73,7 @@ docker run --name elasticsearch \
 ```
 
 **Data-only** node for cluster `elasticsearch-default`:
+
 ```
 docker run --name elasticsearch \
 	--detach --volume /path/to/data_folder:/data \
@@ -80,6 +84,7 @@ docker run --name elasticsearch \
 ```
 
 **Data-only** node for cluster `elasticsearch-default` with shard allocation awareness:
+
 ```
 docker run --name elasticsearch \
 	--detach --volume /path/to/data_folder:/data \
@@ -93,6 +98,7 @@ docker run --name elasticsearch \
 ```
 
 **Client-only** node for cluster `elasticsearch-default`:
+
 ```
 docker run --name elasticsearch \
 	--detach \
@@ -102,6 +108,7 @@ docker run --name elasticsearch \
 	-e NODE_DATA=false \
         quay.io/pires/docker-elasticsearch:6.3.0
 ```
+
 I also make available special images and instructions for [AWS EC2](https://github.com/pires/docker-elasticsearch-aws) and [Kubernetes](https://github.com/pires/docker-elasticsearch-kubernetes).
 
 ### Environment variables
@@ -127,11 +134,13 @@ This image can be configured by means of environment variables, that one can set
 * [PROCESSORS](https://github.com/elastic/elasticsearch-definitive-guide/pull/679/files) - allow elasticsearch to optimize for the actual number of available cpus (must be an integer - default = 1)
 
 ### Backup
+
 Mount a shared folder (for example via NFS) to `/backup` and make sure the `elasticsearch` user
 has write access. Then, set the `REPO_LOCATIONS` environment variable to `["/backup"]` and create
 a backup repository:
 
 `backup_repository.json`:
+
 ```
 {
   "type": "fs",
@@ -147,6 +156,7 @@ curl -XPOST http://<container_ip>:9200/_snapshot/nas_repository -d @backup_repos
 ```
 
 Now, you can take snapshots using:
+
 ```bash
 curl -f -XPUT "http://<container_ip>:9200/_snapshot/nas_repository/snapshot_`date --utc +%Y_%m_%dt%H_%M`?wait_for_completion=true"
 ```

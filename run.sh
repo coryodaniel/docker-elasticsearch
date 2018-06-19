@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/bin/bash -e
 
 BASE=/elasticsearch
 
 # allow for memlock if enabled
 if [ "$MEMORY_LOCK" == "true" ]; then
-    ulimit -l unlimited
+  ulimit -l unlimited
 fi
 
 # Set a random node name if not set.
@@ -12,6 +12,8 @@ if [ -z "${NODE_NAME}" ]; then
 	NODE_NAME=$(uuidgen)
 fi
 export NODE_NAME=${NODE_NAME}
+
+echo "Node ID: ${CLUSTER_NAME}:${NODE_NAME}"
 
 # Create a temporary folder for Elastic Search ourselves.
 # Ref: https://github.com/elastic/elasticsearch/pull/27659
@@ -47,16 +49,13 @@ if [ ! -z "${SHARD_ALLOCATION_AWARENESS_ATTR}" ]; then
     fi
 fi
 
-# remove x-pack-ml module
-rm -rf /elasticsearch/modules/x-pack/x-pack-ml
-
 # run
 if [[ $(whoami) == "root" ]]; then
     chown -R elasticsearch:elasticsearch $BASE
     chown -R elasticsearch:elasticsearch /data
-    exec su-exec elasticsearch $BASE/bin/elasticsearch $ES_EXTRA_ARGS
+    exec gosu elasticsearch $BASE/bin/elasticsearch $ES_EXTRA_ARGS
 else
-    # the container's first process is not running as 'root', 
+    # the container's first process is not running as 'root',
     # it does not have the rights to chown. however, we may
     # assume that it is being ran as 'elasticsearch', and that
     # the volumes already have the right permissions. this is
